@@ -517,6 +517,7 @@
 const live2d_path = 'https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.0-rc.4/dist/';
 
 const cssPath = "https://kanatachika.github.io/iepl.github.io/waifu/waifu.css"
+const waifuTipsJsonPath = "https://kanatachika.github.io/iepl.github.io/waifu/waifu-tips.json"
 
 
 function loadExternalResource(url, type) {
@@ -564,7 +565,7 @@ function loadExternalResource(url, type) {
   
   
   initWidget({
-    waifuPath: live2d_path + 'waifu-tips.json',
+    waifuPath: waifuTipsJsonPath,
     
     cubism2Path: live2d_path + 'live2d.min.js',
     cubism5Path: 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js',
@@ -579,6 +580,8 @@ console.log(`\n%cLive2D%cWidget%c\n`, 'padding: 8px; background: #cd3e45; font-w
 
 
 </script>
+
+
 
     </body>
 </html>
