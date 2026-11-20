@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="二十四小时的纸片：匿名留言自服务端发布时间起满 24 小时后不再公开。">
+<title>二十四小时的纸片 · 留言板</title>
+<link rel="icon" href="/iepl.github.io/favicon.ico">
+<link rel='canonical' href='https://kanatachika.github.io/iepl.github.io/p/guestbook/'>
+
+<link rel="stylesheet" href="/iepl.github.io/scss/style.min.03118a908da6cd07094e2b3cb060a9d51134a6999a3cf8ebe590f477d3b51306.css"><meta property='og:title' content="二十四小时的纸片 · 留言板">
+<meta property='og:description' content="二十四小时的纸片：匿名留言自服务端发布时间起满 24 小时后不再公开。">
+<meta property='og:url' content='https://kanatachika.github.io/iepl.github.io/p/guestbook/'>
+<meta property='og:site_name' content='tachika'>
+<meta property='og:type' content='article'><meta property='article:section' content='Page' />
+<meta name="twitter:title" content="二十四小时的纸片 · 留言板">
+<meta name="twitter:description" content="二十四小时的纸片：匿名留言自服务端发布时间起满 24 小时后不再公开。">
+    <link rel="shortcut icon" href="/iepl.github.io/favicon.ico" />
+
+
+    <style id="guestbook-style">
+    .guestbook-page .main-article .guestbook-content {
+        max-width: 780px;
+        margin: var(--card-padding) auto;
+    }
+    .guestbook-page .guestbook-intro {
+        color: var(--card-text-color-secondary);
+        background: var(--accent-soft);
+        border-left: 3px solid var(--accent-color);
+        border-radius: 0 12px 12px 0;
+        padding: 1rem 1.6rem;
+        margin: 0 0 2.4rem;
+        line-height: 1.75;
+    }
+    .guestbook-page .guestbook-paper {
+        position: relative;
+        padding: 3.2rem;
+        background: var(--card-background-solid);
+        border: 1px solid var(--card-separator-color);
+        border-radius: calc(var(--card-border-radius) - 2px);
+        box-shadow: none;
+        color: var(--card-text-color-main);
+    }
+    .guestbook-page .guestbook-paper-heading {
+        padding-right: 122px;
+    }
+    .guestbook-page .guestbook-kicker {
+        margin: 0 0 0.8rem;
+        color: var(--accent-color);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+    }
+    .guestbook-page .guestbook-paper-heading h3,
+    .guestbook-page .guestbook-afterword h3 {
+        margin: 0 0 1.2rem;
+        color: var(--card-text-color-main);
+        font-family: var(--article-font-family);
+        font-size: 2.2rem;
+        line-height: 1.4;
+    }
+    .guestbook-page .guestbook-rule {
+        margin: 0;
+        color: var(--card-text-color-secondary);
+        line-height: 1.8;
+        overflow-wrap: anywhere;
+    }
+    .guestbook-page .guestbook-postmark {
+        position: absolute;
+        top: 28px;
+        right: 28px;
+        width: 92px;
+        height: 92px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1px;
+        border: 2px solid var(--accent-color);
+        border-radius: 50%;
+        color: var(--accent-color);
+        font-family: var(--base-font-family);
+        line-height: 1.2;
+        text-align: center;
+        transform: rotate(-8deg);
+    }
+    .guestbook-page .guestbook-postmark::before {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        border: 1px solid var(--accent-border);
+        border-radius: 50%;
+    }
+    .guestbook-page .guestbook-postmark span,
+    .guestbook-page .guestbook-postmark small {
+        font-size: 1rem;
+        letter-spacing: 0.08em;
+    }
+    .guestbook-page .guestbook-postmark strong {
+        font-size: 2.1rem;
+        letter-spacing: 0.04em;
+    }
+    .guestbook-page .guestbook-time-scale {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0;
+        list-style: none;
+        margin: 3rem 0;
+        padding: 0;
+        border-top: 1px solid var(--accent-border);
+    }
+    .guestbook-page .guestbook-time-scale li {
+        position: relative;
+        padding-top: 1.2rem;
+        color: var(--card-text-color-secondary);
+        font-family: var(--base-font-family);
+        font-size: 1.25rem;
+        text-align: center;
+    }
+    .guestbook-page .guestbook-time-scale li::before {
+        content: "";
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        width: 1px;
+        height: 8px;
+        background: var(--accent-color);
+    }
+    .guestbook-page .guestbook-time-scale li:last-child {
+        color: var(--accent-color);
+        font-weight: 700;
+    }
+    .guestbook-page .guestbook-time-scale small {
+        display: block;
+        margin-top: 0.3rem;
+        font-size: 1.05rem;
+        font-weight: 400;
+    }
+    .guestbook-page .guestbook-status {
+        margin: 0 0 1.6rem;
+        padding: 1.2rem 1.4rem;
+        background: var(--accent-soft);
+        border-left: 3px solid var(--accent-color);
+        color: var(--card-text-color-main);
+        line-height: 1.65;
+    }
+    .guestbook-page .guestbook-form {
+        display: grid;
+        gap: 0.8rem;
+    }
+    .guestbook-page .guestbook-form label {
+        margin-top: 0.8rem;
+        color: var(--card-text-color-main);
+        font-size: 1.4rem;
+        font-weight: 600;
+    }
+    .guestbook-page .guestbook-form input,
+    .guestbook-page .guestbook-form textarea {
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 44px;
+        padding: 1.1rem 1.2rem;
+        border: 1px solid var(--card-separator-color);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--card-text-color-main);
+        font-family: var(--base-font-family);
+        font-size: 1.6rem;
+        line-height: 1.6;
+    }
+    .guestbook-page .guestbook-form textarea {
+        min-height: 128px;
+        resize: vertical;
+    }
+    .guestbook-page .guestbook-form :disabled {
+        cursor: not-allowed;
+        opacity: 0.62;
+    }
+    .guestbook-page .guestbook-submit,
+    .guestbook-page .guestbook-retry {
+        min-height: 44px;
+        padding: 0.8rem 1.8rem;
+        border: 1px solid var(--accent-color);
+        border-radius: 999px;
+        background: var(--accent-color);
+        color: var(--accent-color-text);
+        font-family: var(--base-font-family);
+        font-size: 1.5rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .guestbook-page .guestbook-submit {
+        justify-self: start;
+        margin-top: 1rem;
+    }
+    .guestbook-page .guestbook-app [hidden] {
+        display: none !important;
+    }
+    .guestbook-page .guestbook-error {
+        padding: 1.4rem;
+        border: 1px solid var(--accent-border);
+        border-radius: 8px;
+        color: var(--card-text-color-main);
+    }
+    .guestbook-page .guestbook-error p {
+        margin-top: 0;
+    }
+    .guestbook-page .guestbook-afterword {
+        margin-top: 2.4rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--card-separator-color);
+        color: var(--card-text-color-secondary);
+        line-height: 1.8;
+    }
+    .guestbook-page .guestbook-afterword p {
+        margin-bottom: 0.8rem;
+    }
+    .guestbook-page .guestbook-waline:empty {
+        display: none;
+    }
+    .guestbook-page .guestbook-waline {
+        --waline-font-size: 16px;
+        --waline-white: var(--card-background-solid);
+        --waline-light-grey: var(--card-text-color-tertiary);
+        --waline-dark-grey: var(--card-text-color-secondary);
+        --waline-theme-color: var(--accent-color);
+        --waline-active-color: var(--accent-color-darker);
+        --waline-color: var(--card-text-color-main);
+        --waline-bg-color: var(--card-background-solid);
+        --waline-bg-color-light: var(--accent-soft);
+        --waline-bg-color-hover: var(--card-background-selected);
+        --waline-border-color: var(--card-separator-color);
+        --waline-disable-bg-color: var(--card-background-selected);
+        --waline-disable-color: var(--card-text-color-tertiary);
+        --waline-code-bg-color: var(--code-background-color);
+        --waline-bq-color: var(--blockquote-background-color);
+        --waline-badge-color: var(--accent-color);
+        --waline-info-bg-color: var(--accent-soft);
+        --waline-info-color: var(--card-text-color-secondary);
+        --waline-border: 1px solid var(--card-separator-color);
+        --waline-box-shadow: none;
+    }
+    .guestbook-page .guestbook-waline .wl-btn,
+    .guestbook-page .guestbook-waline .wl-action {
+        min-height: 44px;
+    }
+    .guestbook-page .guestbook-content :focus-visible,
+    .guestbook-page .guestbook-waline :focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: 3px;
+    }
+    html.is-theme-switching .guestbook-page .guestbook-paper,
+    html.is-theme-switching .guestbook-page .guestbook-postmark,
+    html.is-theme-switching .guestbook-page .guestbook-intro,
+    html.is-theme-switching .guestbook-page .guestbook-status {
+        transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+    }
+    @media (max-width: 767px) {
+        .guestbook-page .guestbook-paper {
+            padding: 2.4rem 1.8rem;
+        }
+        .guestbook-page .guestbook-paper-heading {
+            padding-right: 82px;
+        }
+        .guestbook-page .guestbook-postmark {
+            top: 18px;
+            right: 16px;
+            width: 70px;
+            height: 70px;
+        }
+        .guestbook-page .guestbook-postmark span,
+        .guestbook-page .guestbook-postmark small {
+            font-size: 0.85rem;
+        }
+        .guestbook-page .guestbook-postmark strong {
+            font-size: 1.7rem;
+        }
+        .guestbook-page .guestbook-paper-heading h3,
+        .guestbook-page .guestbook-afterword h3 {
+            font-size: 1.9rem;
+        }
+        .guestbook-page .guestbook-time-scale {
+            margin: 2.4rem 0;
+        }
+        .guestbook-page .guestbook-time-scale small {
+            display: none;
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        html.is-theme-switching .guestbook-page .guestbook-paper,
+        html.is-theme-switching .guestbook-page .guestbook-postmark,
+        html.is-theme-switching .guestbook-page .guestbook-intro,
+        html.is-theme-switching .guestbook-page .guestbook-status {
+            transition: none !important;
+        }
+    }
+    </style>
+    </head>
+    <body class="
+    article-page guestbook-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/iepl.github.io/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/iepl.github.io/img/avatar_hu_dd830dbea31dcb58.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🫵</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/iepl.github.io">tachika</a></h1>
+            <h2 class="site-description">来点有意思的</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/227479506?spm_id_from=333.1007.0.0'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/CaiJimmy/hugo-theme-stack'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="438.549px" height="438.549px" viewBox="0 0 438.549 438.549" style="enable-background:new 0 0 438.549 438.549;"
+	 xml:space="preserve">
+<g>
+	<path d="M409.132,114.573c-19.608-33.596-46.205-60.194-79.798-79.8C295.736,15.166,259.057,5.365,219.271,5.365
+		c-39.781,0-76.472,9.804-110.063,29.408c-33.596,19.605-60.192,46.204-79.8,79.8C9.803,148.168,0,184.854,0,224.63
+		c0,47.78,13.94,90.745,41.827,128.906c27.884,38.164,63.906,64.572,108.063,79.227c5.14,0.954,8.945,0.283,11.419-1.996
+		c2.475-2.282,3.711-5.14,3.711-8.562c0-0.571-0.049-5.708-0.144-15.417c-0.098-9.709-0.144-18.179-0.144-25.406l-6.567,1.136
+		c-4.187,0.767-9.469,1.092-15.846,1c-6.374-0.089-12.991-0.757-19.842-1.999c-6.854-1.231-13.229-4.086-19.13-8.559
+		c-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559
+		c-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-0.951-2.568-2.098-3.711-3.429c-1.142-1.331-1.997-2.663-2.568-3.997
+		c-0.572-1.335-0.098-2.43,1.427-3.289c1.525-0.859,4.281-1.276,8.28-1.276l5.708,0.853c3.807,0.763,8.516,3.042,14.133,6.851
+		c5.614,3.806,10.229,8.754,13.846,14.842c4.38,7.806,9.657,13.754,15.846,17.847c6.184,4.093,12.419,6.136,18.699,6.136
+		c6.28,0,11.704-0.476,16.274-1.423c4.565-0.952,8.848-2.383,12.847-4.285c1.713-12.758,6.377-22.559,13.988-29.41
+		c-10.848-1.14-20.601-2.857-29.264-5.14c-8.658-2.286-17.605-5.996-26.835-11.14c-9.235-5.137-16.896-11.516-22.985-19.126
+		c-6.09-7.614-11.088-17.61-14.987-29.979c-3.901-12.374-5.852-26.648-5.852-42.826c0-23.035,7.52-42.637,22.557-58.817
+		c-7.044-17.318-6.379-36.732,1.997-58.24c5.52-1.715,13.706-0.428,24.554,3.853c10.85,4.283,18.794,7.952,23.84,10.994
+		c5.046,3.041,9.089,5.618,12.135,7.708c17.705-4.947,35.976-7.421,54.818-7.421s37.117,2.474,54.823,7.421l10.849-6.849
+		c7.419-4.57,16.18-8.758,26.262-12.565c10.088-3.805,17.802-4.853,23.134-3.138c8.562,21.509,9.325,40.922,2.279,58.24
+		c15.036,16.18,22.559,35.787,22.559,58.817c0,16.178-1.958,30.497-5.853,42.966c-3.9,12.471-8.941,22.457-15.125,29.979
+		c-6.191,7.521-13.901,13.85-23.131,18.986c-9.232,5.14-18.182,8.85-26.84,11.136c-8.662,2.286-18.415,4.004-29.263,5.146
+		c9.894,8.562,14.842,22.077,14.842,40.539v60.237c0,3.422,1.19,6.279,3.572,8.562c2.379,2.279,6.136,2.95,11.276,1.995
+		c44.163-14.653,80.185-41.062,108.068-79.226c27.88-38.161,41.825-81.126,41.825-128.906
+		C438.536,184.851,428.728,148.168,409.132,114.573z"/>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.5.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="svg5" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1668.56 1221.19"
+	 style="enable-background:new 0 0 1668.56 1221.19;" xml:space="preserve">
+<g id="layer1" transform="translate(52.390088,-25.058597)">
+	<path id="path1009" d="M283.94,167.31l386.39,516.64L281.5,1104h87.51l340.42-367.76L984.48,1104h297.8L874.15,558.3l361.92-390.99
+		h-87.51l-313.51,338.7l-253.31-338.7H283.94z M412.63,231.77h136.81l604.13,807.76h-136.81L412.63,231.77z"/>
+</g>
+</svg>
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/iepl.github.io/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/iepl.github.io/p/daily-news/' >
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-news" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M16 6h3a1 1 0 0 1 1 1v11a2 2 0 0 1 -4 0v-13a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1v12a3 3 0 0 0 3 3h11" />
+  <line x1="8" y1="8" x2="12" y2="8" />
+  <line x1="8" y1="12" x2="12" y2="12" />
+  <line x1="8" y1="16" x2="12" y2="16" />
+</svg>
+                <span>每日新闻</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/iepl.github.io/%E4%BD%9C%E5%93%81/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>作品</span>
+            </a>
+        </li>
+        <li  class='current' >
+            <a href='/iepl.github.io/p/guestbook/' >
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-message-circle" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M8 12h.01M12 12h.01M16 12h.01" />
+</svg>
+                <span>留言板</span>
+            </a>
+        </li>
+
+        
+        
+        
+        
+        
+        
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="season-toggle" role="button" tabindex="0" title="切换季节">
+                        <span class="season-toggle-icon" aria-hidden="true">
+                            <svg class="season-sun icon icon-tabler icon-tabler-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <circle cx="12" cy="12" r="4" />
+                                <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7" />
+                            </svg>
+                        <span class="season-spinner"></span>
+                        </span>
+                        <span>季节<b class="season-current-label"></b></span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article guestbook-article">
+        <header class="article-header">
+            <div class="article-details">
+                <div class="article-title-wrapper">
+                    <h2 class="article-title"><a href="/iepl.github.io/p/guestbook/">二十四小时的纸片</a></h2>
+                    <h3 class="article-subtitle">阅后到期 · 留言板</h3>
+                </div>
+            </div>
+        </header>
+
+        <section class="article-content guestbook-content">
+            <p class="guestbook-intro">写下一句此刻想说的话。它会被寄成一张公开纸片，但不会被许诺为永久存档。</p>
+
+            <section class="guestbook-paper" aria-labelledby="guestbook-paper-title">
+                <div class="guestbook-postmark" aria-hidden="true">
+                    <span>TACHIKA</span>
+                    <strong>24H</strong>
+                    <small>阅后到期</small>
+                </div>
+                <header class="guestbook-paper-heading">
+                    <p class="guestbook-kicker">今日来信</p>
+                    <h3 id="guestbook-paper-title">此刻想说的话</h3>
+                    <p class="guestbook-rule">每条留言自服务端发布时间起满 24 小时后不再公开；计时从发布开始，不是从某一位访客阅读开始。</p>
+                </header>
+
+                <ol class="guestbook-time-scale" aria-label="留言公开周期，从零小时到二十四小时">
+                    <li><span>0h</span><small>寄出</small></li>
+                    <li><span>6h</span><small>展开</small></li>
+                    <li><span>12h</span><small>过半</small></li>
+                    <li><span>18h</span><small>将晚</small></li>
+                    <li><span>24h</span><small>到期</small></li>
+                </ol>
+
+                <div id="guestbook-app" class="guestbook-app" data-server-url="https://tachika-guestbook-server.vercel.app" data-turnstile-key="" data-path="/p/guestbook/">
+                    <div id="guestbook-unconfigured" class="guestbook-unconfigured">
+                        <p id="guestbook-service-status" class="guestbook-status" role="status" aria-live="polite"><strong>留言服务尚未配置。</strong> 当前只能预览纸面，不能提交；配置服务端地址后才会载入留言客户端。</p>
+                        <form class="guestbook-form" aria-describedby="guestbook-service-status">
+                            <label for="guestbook-nick">昵称（可选）</label>
+                            <input id="guestbook-nick" name="nick" type="text" maxlength="40" autocomplete="nickname" placeholder="无名来客" disabled>
+                            <label for="guestbook-message">留言</label>
+                            <textarea id="guestbook-message" name="comment" maxlength="500" required placeholder="一张不必永久保存的纸条……" aria-describedby="guestbook-service-status" disabled></textarea>
+                            <button id="guestbook-submit" class="guestbook-submit" type="submit" disabled>寄出纸片</button>
+                        </form>
+                    </div>
+                    <p id="guestbook-loading" class="guestbook-status" role="status" aria-live="polite" hidden>正在铺开信纸…</p>
+                    <div id="guestbook-error" class="guestbook-error" role="alert" hidden>
+                        <p>纸片没有寄达。留言客户端未能载入，请检查网络或服务端配置后重试。</p>
+                        <button id="guestbook-retry" class="guestbook-retry" type="button">重新载入</button>
+                    </div>
+                    <div id="waline" class="guestbook-waline"></div>
+                </div>
+                <noscript><p class="guestbook-status">需要启用 JavaScript 才能读取或寄出纸片。当前页面没有替你提交任何内容。</p></noscript>
+            </section>
+
+            <section class="guestbook-afterword" aria-labelledby="guestbook-afterword-title">
+                <h3 id="guestbook-afterword-title">纸片离开时</h3>
+                <p>没有留言时，这里会保留一张空白信纸。旧纸片到期后由服务端停止公开，不依赖访客浏览器里的倒计时。</p>
+                <p>无需注册或登录；昵称可留空。请把网址、邮箱等联系方式留在纸外，也不要提交隐私或敏感信息。</p>
+            </section>
+        </section>
+        <footer class="article-footer"></footer>
+    </article>
+    <footer class="site-footer">
+        <section class="copyright">&copy; 2025 立川-TA</section>
+        <section class="powerby">使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br>主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">tachika</a> 设计</section>
+    </footer>
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                defer
+                >
+            </script><script type="text/javascript" src="/iepl.github.io/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+<script>
+  const cdnPath = "/iepl.github.io/live2d";
+  const config = {
+    
+    path: {
+      homePath: "/",
+      modelPath: cdnPath + "/Resources/",
+      cssPath: cdnPath + "/waifu.css",
+      tipsJsonPath: cdnPath + "/waifu-tips.json",
+      tipsJsPath: cdnPath + "/waifu-tips.js",
+      live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
+      live2dSdkPath: cdnPath + "/live2d-sdk.js"
+    },
+    
+    tools: ["hitokoto", "asteroids", "express", "switch-model", "switch-texture", "photo", "info", "quit"],
+    
+    drag: {
+      enable: true,
+      direction: ["x", "y"]
+    },
+    
+    switchType: "order"
+  }
+
+  
+  Promise.all([
+      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(config.path.live2dCorePath, "js"),
+      loadExternalResource(config.path.live2dSdkPath, "js"),
+      loadExternalResource(config.path.tipsJsPath, "js")
+    ]).then(() => {
+      initWidget({
+        waifuPath: config.path.tipsJsonPath,
+        cdnPath: config.path.modelPath,
+        tools: config.tools,
+        dragEnable: config.drag.enable,
+        dragDirection: config.drag.direction,
+        switchType: config.switchType
+      });
+    });
+
+  
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      let tag;
+      if (type === "css") {
+        tag = document.createElement("link");
+        tag.rel = "stylesheet";
+        tag.href = url;
+      }
+      else if (type === "js") {
+        tag = document.createElement("script");
+        tag.src = url;
+      }
+      if (tag) {
+        tag.onload = () => resolve(url);
+        tag.onerror = () => reject(url);
+        document.head.appendChild(tag);
+      }
+    });
+  }
+</script>
+<script src="/iepl.github.io/js/sakura.js"></script><script src="/iepl.github.io/js/season.js"></script>
+
+<script defer src="https://cn.vercount.one/js"></script><script>
+    function showHideView() {
+        
+        let viewCounts = document.querySelectorAll("#viewCount");
+        if (viewCounts) {
+            
+            let article =  document.querySelector(".article-page");
+            if (!article) {
+                viewCounts.forEach(ele => {
+                    ele.style.display = 'none';
+                });
+            }
+        }
+    }
+    
+    showHideView();
+</script>
+
+<style>
+    #backTopBtn {
+        display: none;
+        position: fixed;
+        bottom: 30px;
+        z-index: 99;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        background-image: url(https://kanatachika.github.io/iepl.github.io/icons/backtop.svg);
+    }
+</style>
+
+<script>
+    
+
+    function initScrollTop() {
+        let rightSideBar = document.querySelector(".right-sidebar");
+        if (!rightSideBar) {
+            return;
+        }
+        
+        let btn = document.createElement("div");
+        btn.id = "backTopBtn";
+        btn.onclick = backToTop
+        rightSideBar.appendChild(btn)
+        
+        window.onscroll = function() {
+            
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                btn.style.display = "block";
+            } else {
+                btn.style.display = "none";
+            }
+        };
+    }
+
+    
+
+    function backToTop(){
+        window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+
+    initScrollTop();
+</script>
+
+
+
+
+    
+<script type="module">
+    const root = document.getElementById('guestbook-app');
+    const unconfigured = document.getElementById('guestbook-unconfigured');
+    const loading = document.getElementById('guestbook-loading');
+    const errorBox = document.getElementById('guestbook-error');
+    const retry = document.getElementById('guestbook-retry');
+    const mount = document.getElementById('waline');
+    let booting = false;
+
+    function ensureWalineStyle() {
+        if (document.getElementById('waline-client-style')) return;
+        const link = document.createElement('link');
+        link.id = 'waline-client-style';
+        link.rel = 'stylesheet';
+        link.href = 'https://unpkg.com/@waline/client@v3/dist/waline.css';
+        document.head.appendChild(link);
+    }
+
+    async function bootGuestbook() {
+        if (booting) return;
+        const serverURL = root.dataset.serverUrl.trim();
+        if (!serverURL) {
+            unconfigured.hidden = false;
+            loading.hidden = true;
+            errorBox.hidden = true;
+            return;
+        }
+
+        booting = true;
+        unconfigured.hidden = true;
+        errorBox.hidden = true;
+        loading.hidden = false;
+        mount.replaceChildren();
+        try {
+            ensureWalineStyle();
+            const { init } = await import('https://unpkg.com/@waline/client@v3/dist/waline.js');
+            init({
+                el: mount,
+                serverURL,
+                path: root.dataset.path,
+                lang: 'zh-CN',
+                dark: 'html[data-scheme="dark"]',
+                login: 'disable',
+                meta: ['nick'],
+                requiredMeta: [],
+                commentSorting: 'latest',
+                pageSize: 10,
+                wordLimit: [1, 500],
+                emoji: false,
+                imageUploader: false,
+                search: false,
+                reaction: false,
+                noRss: true,
+                turnstileKey: root.dataset.turnstileKey || undefined
+            });
+            loading.hidden = true;
+        } catch (error) {
+            console.error('Waline 客户端载入失败', error);
+            loading.hidden = true;
+            errorBox.hidden = false;
+        } finally {
+            booting = false;
+        }
+    }
+
+    retry.addEventListener('click', bootGuestbook);
+    bootGuestbook();
+</script>
+</body>
+</html>
